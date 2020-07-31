@@ -45,7 +45,7 @@ def credit_card_balance_process(credit_card_balance):
 
 if __name__ == "__main__":
     
-    credit_card_balance = pd.read_csv('./input/credit_card_balance.csv')
+    credit_card_balance = pd.read_csv('../input/credit_card_balance.csv')
     
     credit_card_balance_group = credit_card_balance_process(credit_card_balance)
     

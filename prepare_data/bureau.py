@@ -81,7 +81,7 @@ def bureau_process(bureau):
 
 if __name__ == "__main__":
     
-    bureau = pd.read_csv('./input/bureau.csv')
+    bureau = pd.read_csv('../input/bureau.csv')
     
     bureau_group = bureau_process(bureau)
     

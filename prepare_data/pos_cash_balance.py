@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 def POS_CASH_balance_group_process(POS_CASH_balance):
     

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pickle
 
 def prev_application_process(previous_application,POS_CASH_balance,credit_card_balance,installments_payments):
     

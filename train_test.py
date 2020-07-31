@@ -1,10 +1,15 @@
 import numpy as np
 import pandas as pd
+import pickle
+import gc
+
+from sklearn.preprocessing import LabelEncoder
+
+from utils.utils import reduce_mem_usage
 
 def ratio_dif_features(df, features):
     
     divide_features = ['AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_ANNUITY', 'AMT_GOODS_PRICE', 
-                      # 'CNT_FAM_MEMBERS'
                       ]
     
     for feature in features:
@@ -123,10 +128,10 @@ def data_process(df):
     
     df.loc[(df['Annuity_calculated_sum_active_bureau']==np.inf)|(df['Annuity_calculated_sum_active_bureau']==-np.inf),'Annuity_calculated_sum_active_bureau'] = 0
     
-    df['balance_total'] = df['AMT_CREDIT'] +        df['AMT_CREDIT_SUM_DEBT_sum_active_bureau'] +        df['AMT_BALANCE_CASH_LOANS_sum_active_prev_application'] +        df['AMT_BALANCE_latest_credit_card_sum_active_prev_application']
+    df['balance_total'] = df['AMT_CREDIT'] + df['AMT_CREDIT_SUM_DEBT_sum_active_bureau'] + df['AMT_BALANCE_CASH_LOANS_sum_active_prev_application'] + df['AMT_BALANCE_latest_credit_card_sum_active_prev_application']
     df['ratio_balance_income'] = df['balance_total'] / df['AMT_INCOME_TOTAL']
     
-    df['ANNUITY_total'] = train['AMT_ANNUITY'] +        df['AMT_ANNUITY_sum_active_bureau'] +        df['Annuity_calculated_sum_active_bureau'] +        df['AMT_ANNUITY_sum_active_prev_application'] +        df['AMT_INST_MIN_REGULARITY_latest_credit_card_sum_active_prev_application']
+    df['ANNUITY_total'] = train['AMT_ANNUITY'] + df['AMT_ANNUITY_sum_active_bureau'] + df['Annuity_calculated_sum_active_bureau'] + df['AMT_ANNUITY_sum_active_prev_application'] +        df['AMT_INST_MIN_REGULARITY_latest_credit_card_sum_active_prev_application']
     
     df['ratio_annuity_income'] = df['ANNUITY_total'] / df['AMT_INCOME_TOTAL']
     df['diff_annuity_income'] = df['ANNUITY_total'] - df['AMT_INCOME_TOTAL']
@@ -156,20 +161,20 @@ def data_process(df):
 
 if __name__ == "__main__":
     
-    train = pd.read_csv('../input/application_train.csv')
-    test = pd.read_csv('../input/application_test.csv')
-	with open('../processed/bureau_group.pickle', 'rb') as handle:
-		bureau_group = pickle.load(handle)
-    with open('../processed/bureau_balance_group.pickle', 'rb') as handle:
-		bureau_balance_group = pickle.load(handle)
-    with open('../processed/credit_card_balance_group.pickle', 'rb') as handle:
-		credit_card_balance_group = pickle.load(handle)
-    with open('../processed/installments_group.pickle', 'rb') as handle:
-		installments_group = pickle.load(handle)
-    with open('../processed/POS_CASH_balance_group.pickle', 'rb') as handle:
-		POS_CASH_balance_group = pickle.load(handle)
-    with open('../processed/previous_application_group.pickle', 'rb') as handle:
-		previous_application_group = pickle.load(handle)
+    train = pd.read_csv('./input/application_train.csv')
+    test = pd.read_csv('./input/application_test.csv')
+    with open('./processed/bureau_processed.pickle', 'rb') as handle:
+    	bureau_group = pickle.load(handle)
+    with open('./processed/bureau_balance_processed.pickle', 'rb') as handle:
+	bureau_balance_group = pickle.load(handle)
+    with open('./processed/credit_card_balance_processed.pickle', 'rb') as handle:
+	credit_card_balance_group = pickle.load(handle)
+    with open('./processed/installments_payments_processed.pickle', 'rb') as handle:
+	installments_group = pickle.load(handle)
+    with open('./processed/POS_CASH_balance_processed.pickle', 'rb') as handle:
+	POS_CASH_balance_group = pickle.load(handle)
+    with open('./processed/previous_application_processed.pickle', 'rb') as handle:
+	previous_application_group = pickle.load(handle)
     
     for feature in train.columns:
         if train[feature].dtypes == 'object':
@@ -199,9 +204,9 @@ if __name__ == "__main__":
     train = data_process(train)
     test = data_process(test)
     
-    with open('../processed/train_processed.pickle', 'wb') as handle:
+    with open('./processed/train_processed.pickle', 'wb') as handle:
         pickle.dump(train, handle, protocol = pickle.HIGHEST_PROTOCOL)
         
-    with open('../processed/test_processed.pickle', 'wb') as handle:
+    with open('./processed/test_processed.pickle', 'wb') as handle:
         pickle.dump(test, handle, protocol = pickle.HIGHEST_PROTOCOL)
 

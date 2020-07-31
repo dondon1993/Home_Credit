@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pickle
 
 def credit_card_balance_process(credit_card_balance):
     

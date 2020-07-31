@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
-import shap
-import math
-import random
+import pickle, gc, shap, math, random, time
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn import metrics
@@ -39,7 +41,6 @@ def train_model_classification(X, y, params, groups, folds, model_type='lgb', ev
                         'sklearn_scoring_function': metrics.roc_auc_score},
                     }
 
-    
     result_dict = {}
     
     # out-of-fold predictions on train data
@@ -118,7 +119,7 @@ def train_model_classification(X, y, params, groups, folds, model_type='lgb', ev
         else:
             scores.append(metrics_dict[eval_metric]['scoring_function'](y_valid, y_pred_valid, X_valid['type']))
 
-        with open(f'../models/models_{model_type}_{seed}.pickle', 'wb') as handle:
+        with open(f'./models/models_{model_type}_{seed}.pickle', 'wb') as handle:
             pickle.dump(models, handle, protocol = pickle.HIGHEST_PROTOCOL)
             
         gc.collect()
@@ -155,6 +156,7 @@ def train_model_classification(X, y, params, groups, folds, model_type='lgb', ev
         
     return result_dict
 
+  
 def predict(df, models, model_type = 'lgb'):
     prediction = np.zeros(len(df))
     for model in models:
@@ -169,6 +171,7 @@ def predict(df, models, model_type = 'lgb'):
         
     return prediction
 
+  
 class train_config:
     
     def __init__(self, n_splits, features, model_type, model_params, eval_metric, early_stopping_rounds, n_estimators,
@@ -184,11 +187,8 @@ class train_config:
         self.save_oof = save_oof
         self.seed = seed
 
-
-# In[ ]:
-
-
-def model_train(df_train, df_test, train_config):
+        
+def model_train(df_train, train_config):
     
     n_splits = train_config.n_splits
     seed = train_config.seed
@@ -210,15 +210,12 @@ def model_train(df_train, df_test, train_config):
     return result_dict
 
 
-# In[ ]:
-
-
 if __name__ == "__main__":
     
-    with open('../processed/train_processed.pickle', 'rb') as handle:
+    with open('./processed/train_processed.pickle', 'rb') as handle:
         train = pickle.load(handle)
 
-    with open('../processed/test_processed.pickle', 'rb') as handle:
+    with open('./processed/test_processed.pickle', 'rb') as handle:
         test = pickle.load(handle)
         
     config_path = sys.argv[1]
@@ -233,26 +230,26 @@ if __name__ == "__main__":
         eval_metric = config['eval_metric'],
         early_stopping_rounds = config['early_stopping_rounds'],
         n_estimators = config['n_estimators'],
-        save_oof = config['save_oof']
+        save_oof = config['save_oof'],
         seed = config['seed'],
     )
     
     result_dict = model_train(train, t_config)
     
     models = result_dict['models']
-    prediction = predict(test[features_0], models)
+    prediction = predict(test[t_config.features], models)
     
-    if train_config.save_oof == True:
+    if t_config.save_oof == True:
         
-        train[f'oof_{train_config.model_type}_{train_config.seed}'] = result_dict['oof']
-        test[f'oof_{train_config.model_type}_{train_config.seed}'] = prediction
+        train[f'oof_{t_config.model_type}_{t_config.seed}'] = result_dict['oof']
+        test[f'oof_{t_config.model_type}_{t_config.seed}'] = prediction
         
-        with open('../processed/train_processed.pickle', 'wb') as handle:
+        with open('./processed/train_processed.pickle', 'wb') as handle:
             pickle.dump(train, handle, protocol = pickle.HIGHEST_PROTOCOL)
-        with open('../processed/test_processed.pickle', 'wb') as handle:
+        with open('./processed/test_processed.pickle', 'wb') as handle:
             pickle.dump(test, handle, protocol = pickle.HIGHEST_PROTOCOL)
     
     sample_submission = pd.read_csv('./input/sample_submission.csv')
     sample_submission['TARGET'] = prediction
-    sample_submission.to_csv(f'./submissions/submission_{train_config.model_type}_{train_config.seed}.csv', index=False)
+    sample_submission.to_csv(f'./submissions/submission_{t_config.model_type}_{t_config.seed}.csv', index=False)
 

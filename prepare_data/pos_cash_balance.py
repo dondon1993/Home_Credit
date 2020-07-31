@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 def POS_CASH_balance_group_process(POS_CASH_balance):
     
@@ -39,7 +40,7 @@ def POS_CASH_balance_group_process(POS_CASH_balance):
 
 if __name__ == "__main__":
     
-    POS_CASH_balance = pd.read_csv('./input/POS_CASH_balance.csv')
+    POS_CASH_balance = pd.read_csv('../input/POS_CASH_balance.csv')
     
     POS_CASH_balance_group = POS_CASH_balance_group_process(POS_CASH_balance)
     

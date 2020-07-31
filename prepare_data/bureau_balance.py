@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 def bureau_balance_process(bureau_balance, bureau):
     
@@ -57,8 +58,8 @@ def bureau_balance_process(bureau_balance, bureau):
 
 if __name__ == "__main__":
     
-    bureau_balance = pd.read_csv('./input/bureau_balance.csv')
-    bureau = pd.read_csv('./input/bureau_balance.csv')
+    bureau_balance = pd.read_csv('../input/bureau_balance.csv')
+    bureau = pd.read_csv('../input/bureau.csv')
     
     bureau_balance_group = bureau_balance_process(bureau_balance, bureau)
     

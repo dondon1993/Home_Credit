@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 
 def installments_payments_process(installments_payments):
     
@@ -171,7 +172,7 @@ def installments_payments_process(installments_payments):
 
 if __name__ == "__main__":
     
-    installments_payments = pd.read_csv('./input/installments_payments.csv')
+    installments_payments = pd.read_csv('../input/installments_payments.csv')
     
     installments_group = installments_payments_process(installments_payments)
     

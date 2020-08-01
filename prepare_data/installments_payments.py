@@ -5,7 +5,7 @@ import pickle
 def installments_payments_days_process(installments_payments, days=None):
     
     if days == None:
-        installments_payments = installments_payments
+        installments_payments_last_days = installments_payments
     else:
         installments_payments_last_days = installments_payments[installments_payments.DAYS_ENTRY_PAYMENT >= -days]    
     

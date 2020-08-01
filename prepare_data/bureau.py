@@ -6,6 +6,8 @@ def bureau_process(bureau):
     
     bureau['Annuity_calculated'] = bureau['AMT_CREDIT_SUM']/ (bureau['DAYS_CREDIT_ENDDATE']-bureau['DAYS_CREDIT']) * 30
     bureau.loc[bureau['CREDIT_TYPE']=='Credit card','Annuity_calculated']=0
+    bureau['DEBT_RATIO']=bureau['AMT_CREDIT_SUM_DEBT']/bureau['AMT_CREDIT_SUM']
+    bureau['MAX_OVERDUE_RATIO']=bureau['AMT_CREDIT_MAX_OVERDUE']/bureau['AMT_CREDIT_SUM']
     
     bureau_group = bureau.groupby('SK_ID_CURR').agg({'SK_ID_CURR':'count'})
     bureau_group.columns = ['record_bureau_count']
@@ -24,6 +26,8 @@ def bureau_process(bureau):
                 'AMT_CREDIT_SUM_LIMIT': ['max', 'min', 'mean', 'sum'],
                 'DAYS_CREDIT_UPDATE': ['max', 'min', 'mean'],
                 'AMT_ANNUITY': ['max', 'min', 'mean', 'sum'],
+                'DEBT_RATIO': ['max', 'min', 'mean', 'sum'],
+                'MAX_OVERDUE_RATIO': ['max', 'min', 'mean', 'sum'],
     })
     bureau_stats.columns = ['_'.join(column)+'_stats_bureau' for column in bureau_stats.columns]
     bureau_stats.reset_index(inplace = True)
@@ -32,20 +36,22 @@ def bureau_process(bureau):
     
     bureau_active = bureau.loc[bureau['CREDIT_ACTIVE']=='Active']
     bureau_active_group = bureau_active.groupby('SK_ID_CURR').agg({
-        'SK_ID_CURR': 'count',
-        'AMT_CREDIT_SUM_DEBT': ['max', 'min', 'sum'],
-        'AMT_ANNUITY': ['max', 'min', 'sum'],
-        'Annuity_calculated': ['max', 'min', 'sum'],
-        'DAYS_CREDIT': ['max', 'min', 'mean'],
-        'CREDIT_DAY_OVERDUE': ['max', 'min', 'mean'],
-        'DAYS_CREDIT_ENDDATE': ['max', 'min', 'mean'],
-        'DAYS_ENDDATE_FACT': ['max', 'min', 'mean'],
-        'AMT_CREDIT_MAX_OVERDUE': ['max', 'min', 'mean', 'sum'],
-        'CNT_CREDIT_PROLONG': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM_OVERDUE': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM_LIMIT': ['max', 'min', 'mean', 'sum'],
-        'DAYS_CREDIT_UPDATE': ['max', 'min', 'mean'],
+                'SK_ID_CURR': 'count',
+                'AMT_CREDIT_SUM_DEBT': ['max', 'min', 'sum'],
+                'AMT_ANNUITY': ['max', 'min', 'sum'],
+                'Annuity_calculated': ['max', 'min', 'sum'],
+                'DAYS_CREDIT': ['max', 'min', 'mean'],
+                'CREDIT_DAY_OVERDUE': ['max', 'min', 'mean'],
+                'DAYS_CREDIT_ENDDATE': ['max', 'min', 'mean'],
+                'DAYS_ENDDATE_FACT': ['max', 'min', 'mean'],
+                'AMT_CREDIT_MAX_OVERDUE': ['max', 'min', 'mean', 'sum'],
+                'CNT_CREDIT_PROLONG': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM_OVERDUE': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM_LIMIT': ['max', 'min', 'mean', 'sum'],
+                'DAYS_CREDIT_UPDATE': ['max', 'min', 'mean'],
+                'DEBT_RATIO': ['max', 'min', 'mean', 'sum'],
+                'MAX_OVERDUE_RATIO': ['max', 'min', 'mean', 'sum'],
     })
     bureau_active_group.columns = ['_'.join(column)+'_active_bureau' for column in bureau_active_group.columns]
     bureau_active_group.reset_index(inplace=True)
@@ -57,20 +63,22 @@ def bureau_process(bureau):
     bureau_closed['Days_diff'] = bureau_closed['DAYS_ENDDATE_FACT'] - bureau_closed['DAYS_CREDIT_ENDDATE']
 
     bureau_closed_group = bureau_closed.groupby('SK_ID_CURR').agg({
-        'Days_diff': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM_DEBT': ['max', 'min', 'sum'],
-        'AMT_ANNUITY': ['max', 'min', 'sum'],
-        'Annuity_calculated': ['max', 'min', 'sum'],
-        'DAYS_CREDIT': ['max', 'min', 'mean'],
-        'CREDIT_DAY_OVERDUE': ['max', 'min', 'mean'],
-        'DAYS_CREDIT_ENDDATE': ['max', 'min', 'mean'],
-        'DAYS_ENDDATE_FACT': ['max', 'min', 'mean'],
-        'AMT_CREDIT_MAX_OVERDUE': ['max', 'min', 'mean', 'sum'],
-        'CNT_CREDIT_PROLONG': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM_OVERDUE': ['max', 'min', 'mean', 'sum'],
-        'AMT_CREDIT_SUM_LIMIT': ['max', 'min', 'mean', 'sum'],
-        'DAYS_CREDIT_UPDATE': ['max', 'min', 'mean'],
+                'Days_diff': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM_DEBT': ['max', 'min', 'sum'],
+                'AMT_ANNUITY': ['max', 'min', 'sum'],
+                'Annuity_calculated': ['max', 'min', 'sum'],
+                'DAYS_CREDIT': ['max', 'min', 'mean'],
+                'CREDIT_DAY_OVERDUE': ['max', 'min', 'mean'],
+                'DAYS_CREDIT_ENDDATE': ['max', 'min', 'mean'],
+                'DAYS_ENDDATE_FACT': ['max', 'min', 'mean'],
+                'AMT_CREDIT_MAX_OVERDUE': ['max', 'min', 'mean', 'sum'],
+                'CNT_CREDIT_PROLONG': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM_OVERDUE': ['max', 'min', 'mean', 'sum'],
+                'AMT_CREDIT_SUM_LIMIT': ['max', 'min', 'mean', 'sum'],
+                'DAYS_CREDIT_UPDATE': ['max', 'min', 'mean'],
+                'DEBT_RATIO': ['max', 'min', 'mean', 'sum'],
+                'MAX_OVERDUE_RATIO': ['max', 'min', 'mean', 'sum'],
     })
     bureau_closed_group.columns = ['_'.join(column)+'_closed_bureau' for column in bureau_closed_group.columns]
     bureau_closed_group.reset_index(inplace=True)

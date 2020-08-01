@@ -47,4 +47,4 @@ For each SK_ID_CURR in the test set, you must predict a probability for the TARG
 
   * This file contains descriptions for the columns in the various data files.
   
-  ![figure](/images/home_credit.png)
+  ![Figure 1](/images/home_credit.png)

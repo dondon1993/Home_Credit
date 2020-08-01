@@ -72,17 +72,17 @@ Final model is heavily based on lightgbm models. I trained 10 first level lightg
 # Summary
 
 * What works
- * Ratio and difference features and aggregated statistical features based on ratio and difference features 
- * Aggregated statistical features based on subsets of different data sets (data from last 2 year, 1 year, 3 month. First or last 20 installments records)
- * Hyperparameter tunning
- * Model stacking
- * Feature selection based on shap value or feature importance change after shuffling of targets 
+  * Ratio and difference features and aggregated statistical features based on ratio and difference features 
+  * Aggregated statistical features based on subsets of different data sets (data from last 2 year, 1 year, 3 month. First or last 20 installments records)
+  * Hyperparameter tunning
+  * Model stacking
+  * Feature selection based on shap value or feature importance change after shuffling of targets 
  
 * What doesn't work
- * Sample downsampling
- * Different sample weights
- * Outlier removing based on target and oof results or some feature values
- * Try to figure out application from same people
+  * Sample downsampling
+  * Different sample weights
+  * Outlier removing based on target and oof results or some feature values
+  * Try to figure out application from same people
  
 # Things to improve
 

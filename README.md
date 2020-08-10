@@ -67,7 +67,7 @@ Based on my own experience and top solutions in the competition, feature enginee
 
 # Modelling
 
-Final model is heavily based on lightgbm models. I trained 10 first level lightgbm models with 5-fold validation scheme with different random seeds. I also trained 1 xgboost and 1 catboost models with 5-fold validation scheme. In the second level model I combined out of folds results from 12 models as features with earlier features and used lightgbm to fit. It improves both the local CV and LB results. The final result is 0.79718 ranked 214/7190.
+Final model is heavily based on lightgbm models. I trained 10 first level lightgbm models with 5-fold validation scheme with different random seeds. I also trained 1 xgboost and 1 catboost models with 5-fold validation scheme. In the second level I used results from 12 models as features and combined them with earlier engineered features to form the new training data. A lightgbm model is applied to fit the new data. It improves both the local CV and LB results. The final result is 0.79718 ranked 214/7190.
 
 # Summary
 

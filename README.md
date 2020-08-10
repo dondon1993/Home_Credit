@@ -4,7 +4,7 @@ Home Credit strives to broaden financial inclusion for the unbanked population b
 
 While Home Credit is currently using various statistical and machine learning methods to make these predictions, they're challenging Kagglers to help them unlock the full potential of their data. Doing so will ensure that clients capable of repayment are not rejected and that loans are given with a principal, maturity, and repayment calendar that will empower their clients to be successful.
 
-For each SK_ID_CURR in the test set, you must predict a probability for the TARGET variable. Submissions are evaluated on area under the ROC curve between the predicted probability and the observed target.
+In this [competition](https://www.kaggle.com/c/home-credit-default-risk/overview), for each SK_ID_CURR in the test set, you must predict a probability for the TARGET variable. Submissions are evaluated on area under the ROC curve between the predicted probability and the observed target.
 
 # File Descriptions
 

@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from utils.utils import reduce_mem_usage
 
+# Generate different ratio related features. Ratio features not implemented here
 def ratio_dif_features(df, features):
     
     divide_features = ['AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_ANNUITY', 'AMT_GOODS_PRICE', 
@@ -20,6 +21,7 @@ def ratio_dif_features(df, features):
 
     return df
 
+# Merge features generated from other data sets
 def data_merge(df,bureau_group,bureau_balance_group,previous_application_group,installments_group,POS_CASH_balance_group,credit_card_balance_group):
     
     df = pd.merge(df, bureau_group, how='left', on='SK_ID_CURR')

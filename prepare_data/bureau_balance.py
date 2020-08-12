@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-
+# process bureau_balance data
 def bureau_balance_process(bureau_balance, bureau):
     
     columns = ['SK_ID_CURR', 'SK_ID_BUREAU']
@@ -11,13 +11,13 @@ def bureau_balance_process(bureau_balance, bureau):
     bureau_balance_group.columns = ['_'.join(column)+'_bureau_balance' for column in bureau_balance_group.columns]
     bureau_balance_group.reset_index(inplace=True)
 
-    bureau_balance_group['history_bureau_balance'] = bureau_balance_group['MONTHS_BALANCE_max_bureau_balance'] -                                                      bureau_balance_group['MONTHS_BALANCE_min_bureau_balance']
+    bureau_balance_group['history_bureau_balance'] = bureau_balance_group['MONTHS_BALANCE_max_bureau_balance'] - bureau_balance_group['MONTHS_BALANCE_min_bureau_balance']
     
     bureau_balance_account_group = bureau_balance.groupby(['SK_ID_CURR', 'SK_ID_BUREAU']).agg({'MONTHS_BALANCE': ['max', 'min']})
     bureau_balance_account_group.columns = ['_'.join(column)+'_bureau_balance' for column in bureau_balance_account_group.columns]
     bureau_balance_account_group.reset_index(inplace=True)
 
-    bureau_balance_account_group['duration_bureau_balance'] = bureau_balance_account_group['MONTHS_BALANCE_max_bureau_balance'] -                                                              bureau_balance_account_group['MONTHS_BALANCE_min_bureau_balance'] + 1
+    bureau_balance_account_group['duration_bureau_balance'] = bureau_balance_account_group['MONTHS_BALANCE_max_bureau_balance'] - bureau_balance_account_group['MONTHS_BALANCE_min_bureau_balance'] + 1
     
     states = bureau_balance['STATUS'].unique()
     for state in states:
@@ -26,8 +26,8 @@ def bureau_balance_process(bureau_balance, bureau):
         tmp_account_group.columns = [f'num_month_{state}_bureau_balance']
         tmp_account_group.reset_index(inplace=True)
 
-        bureau_balance_account_group = pd.merge(bureau_balance_account_group, tmp_account_group, how='left',                                                on = ['SK_ID_CURR','SK_ID_BUREAU'])
-        bureau_balance_account_group[f'ratio_{state}_bureau_balance'] = bureau_balance_account_group[f'num_month_{state}_bureau_balance'] /                                                                        bureau_balance_account_group['duration_bureau_balance']
+        bureau_balance_account_group = pd.merge(bureau_balance_account_group, tmp_account_group, how='left', on = ['SK_ID_CURR','SK_ID_BUREAU'])
+        bureau_balance_account_group[f'ratio_{state}_bureau_balance'] = bureau_balance_account_group[f'num_month_{state}_bureau_balance'] / bureau_balance_account_group['duration_bureau_balance']
         
     bureau_balance_account_group_group = bureau_balance_account_group.groupby('SK_ID_CURR').agg({'duration_bureau_balance':['max', 'min', 'mean', 'sum']})
     bureau_balance_account_group_group.columns = ['_'.join(column)+'_bureau_balance' for column in bureau_balance_account_group_group.columns]

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pickle
-
+# process a subset of credit_card_balance data according to months from current time
 def credit_card_balance_months_process(credit_card_balance, months=None):
     
     if days == None:
@@ -41,7 +41,7 @@ def credit_card_balance_process(credit_card_balance):
     credit_card_balance_group = credit_card_balance.groupby('SK_ID_CURR').agg({'SK_ID_PREV': 'nunique'})
     credit_card_balance_group.columns = ['num_credit_card']
     credit_card_balance_group.reset_index(inplace=True)
-    
+    # Aggregation with respect to under payment data
     tmp = credit_card_balance.loc[credit_card_balance['diff_AMT_PAYMENT']<0]
     credit_card_balance_DPD_group = tmp.groupby(['SK_ID_CURR']).agg({
             'diff_AMT_PAYMENT': ['sum','count', 'max', 'min', 'mean'],
@@ -62,7 +62,7 @@ def credit_card_balance_process(credit_card_balance):
     credit_card_balance_DPD_group.reset_index(inplace = True)
 
     credit_card_balance_group = pd.merge(credit_card_balance_group, credit_card_balance_DPD_group, how='left', on='SK_ID_CURR')
-    
+    # Aggregation with respect to all data, data in last 2 years, 1 year, 6 months and 3 months
     credit_card_balance_group_all = credit_card_balance_months_process(credit_card_balance, months=None)
     credit_card_balance_group_last_24months = credit_card_balance_months_process(credit_card_balance, months=24)
     credit_card_balance_group_last_12months = credit_card_balance_months_process(credit_card_balance, months=12)

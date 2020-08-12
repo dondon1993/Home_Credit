@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-
+# process POS_CASH_balance data
 def POS_CASH_balance_group_process(POS_CASH_balance):
     
     POS_CASH_balance_group = POS_CASH_balance.groupby('SK_ID_CURR').agg({
@@ -12,7 +12,7 @@ def POS_CASH_balance_group_process(POS_CASH_balance):
     })
     POS_CASH_balance_group.columns = ['_'.join(column)+'_POS_CASH' for column in POS_CASH_balance_group.columns]
     POS_CASH_balance_group.reset_index(inplace = True)
-
+    
     POS_CASH_balance_comp = POS_CASH_balance.loc[POS_CASH_balance['NAME_CONTRACT_STATUS']=='Completed']
     POS_CASH_balance_comp_group = POS_CASH_balance_comp.groupby('SK_ID_CURR').agg({'SK_ID_CURR': 'count'})
     POS_CASH_balance_comp_group.columns = ['loan_completed_POS_CASH']

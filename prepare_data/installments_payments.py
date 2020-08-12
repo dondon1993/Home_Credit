@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-
+# Process a subset of installments_payments data according to days from the current application
 def installments_payments_days_process(installments_payments, days=None):
     
     if days == None:
@@ -102,7 +102,7 @@ def installments_payments_process(installments_payments):
     installments_payments['AMT_ratio'] = installments_payments['AMT_PAYMENT'] / installments_payments['AMT_INSTALMENT']
     
     installments_payments = installments_payments.sort_values(['SK_ID_CURR','SK_ID_PREV','NUM_INSTALMENT_NUMBER'])
-    
+    # Aggregation with respect to all, 2 years, 1 year, 6 months and 3 months data from the current application
     installments_group = installments_payments_days_process(installments_payments, days=None)
     installments_group_last_730 = installments_payments_days_process(installments_payments, days=730)
     installments_group_last_365 = installments_payments_days_process(installments_payments, days=365)
@@ -114,6 +114,9 @@ def installments_payments_process(installments_payments):
     installments_group = pd.merge(installments_group, installments_group_last_180, how = 'left', on = 'SK_ID_CURR')
     installments_group = pd.merge(installments_group, installments_group_last_90, how = 'left', on = 'SK_ID_CURR')
     
+    # X: first X installments
+    # Y: payment no later than Y days
+    # tlc: the tolerance for under payment
     X = 5
     Y = 10
     tlc = 250

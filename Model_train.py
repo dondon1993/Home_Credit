@@ -15,6 +15,7 @@ from catboost import CatBoostClassifier
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import NuSVR, SVR
 
+# This script can also be used for stacking purpose by inputing training data set with oof results as features additional to earlier engineered features from different data sets. 
 
 def train_model_classification(X, y, params, groups, folds, model_type='lgb', eval_metric='auc', columns=None, plot_feature_importance=False, model=None,
                                verbose=10000, early_stopping_rounds=200, n_estimators=50000, weight = None, seed='no'):

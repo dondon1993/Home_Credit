@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
+# process bureau data
 def bureau_process(bureau):
     
     bureau['Annuity_calculated'] = bureau['AMT_CREDIT_SUM']/ (bureau['DAYS_CREDIT_ENDDATE']-bureau['DAYS_CREDIT']) * 30
@@ -12,7 +13,7 @@ def bureau_process(bureau):
     bureau_group = bureau.groupby('SK_ID_CURR').agg({'SK_ID_CURR':'count'})
     bureau_group.columns = ['record_bureau_count']
     bureau_group.reset_index(inplace = True)
-    
+    # Aggregation with respect to all data
     bureau_stats = bureau.groupby('SK_ID_CURR').agg({
                 'DAYS_CREDIT': ['max', 'min', 'mean'],
                 'CREDIT_DAY_OVERDUE': ['max', 'min', 'mean'],
@@ -33,7 +34,7 @@ def bureau_process(bureau):
     bureau_stats.reset_index(inplace = True)
 
     bureau_group = pd.merge(bureau_group, bureau_stats, how = 'left', on = ['SK_ID_CURR'])
-    
+    # Aggregation with respect to active data
     bureau_active = bureau.loc[bureau['CREDIT_ACTIVE']=='Active']
     bureau_active_group = bureau_active.groupby('SK_ID_CURR').agg({
                 'SK_ID_CURR': 'count',
@@ -58,7 +59,7 @@ def bureau_process(bureau):
 
     bureau_group = pd.merge(bureau_group, bureau_active_group, how='left', on = ['SK_ID_CURR'])
     bureau_group['active_ratio_bureau'] = bureau_group['SK_ID_CURR_count_active_bureau']/bureau_group['record_bureau_count']
-    
+    # Aggregation with respect to closed data
     bureau_closed = bureau.loc[bureau['CREDIT_ACTIVE']=='Closed']
     bureau_closed['Days_diff'] = bureau_closed['DAYS_ENDDATE_FACT'] - bureau_closed['DAYS_CREDIT_ENDDATE']
 

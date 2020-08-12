@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
 import pickle
-
+# process prev_application data
 def prev_application_process(previous_application,POS_CASH_balance,credit_card_balance,installments_payments):
     
     previous_application = previous_application.loc[previous_application['NAME_CONTRACT_TYPE']!='XNA']
     POS_CASH_balance = POS_CASH_balance.sort_values(['SK_ID_CURR','SK_ID_PREV','MONTHS_BALANCE'])
     credit_card_balance = credit_card_balance.sort_values(['SK_ID_CURR','SK_ID_PREV','MONTHS_BALANCE'])
     installments_payments = installments_payments.sort_values(['SK_ID_CURR','SK_ID_PREV','NUM_INSTALMENT_NUMBER'])
-    
+    # Get the latest state from POS_CASH, credit_card_balance and instalments_payments
     POS_CASH_latest = POS_CASH_balance.groupby(['SK_ID_CURR','SK_ID_PREV']).nth(-1)
     POS_CASH_latest.reset_index(inplace=True)
     POS_CASH_latest.columns = [column + '_latest_POS_CASH' if column not in ['SK_ID_CURR', 'SK_ID_PREV'] else column for column in POS_CASH_latest.columns]
@@ -81,12 +81,12 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
         'DAYS_DECISION': ['min', 'max', 'mean'],
         'CNT_PAYMENT': ['max', 'min', 'mean', 'sum'],
     }
-    
+    # Aggregation with respect to all data
     tmp = previous_application.groupby('SK_ID_CURR').agg(num_agg)
     tmp.columns = [('_'.join(column) +'_previous_application') for column in tmp.columns]
     tmp.reset_index(inplace = True)
     previous_application_group = pd.merge(previous_application_group, tmp, how = 'left', on = 'SK_ID_CURR')
-    
+    # Aggregation with respect to approved data
     previous_application_app = previous_application.loc[previous_application['NAME_CONTRACT_STATUS']=='Approved']
     app_group = previous_application_app.groupby('SK_ID_CURR').agg({
         'AMT_ANNUITY': ['max', 'mean', 'sum'],
@@ -113,7 +113,7 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
     app_group.reset_index(inplace = True)
 
     previous_application_group = pd.merge(previous_application_group, app_group, how = 'left', on = 'SK_ID_CURR')
-
+    # tlc: tolerance for the late days
     tlc = 10
     previous_application_tlc = previous_application.loc[(previous_application['NAME_CONTRACT_STATUS']=='Approved')&(previous_application['diff_days_2']<-tlc)]
     previous_application_tlc_group = previous_application_tlc.groupby(['SK_ID_CURR']).agg({
@@ -180,7 +180,7 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
     uo_group.reset_index(inplace = True)
 
     previous_application_group = pd.merge(previous_application_group, uo_group, how = 'left', on = 'SK_ID_CURR')
-    
+    # Aggregation with respect to data that is still active
     previous_application_active = previous_application.loc[previous_application['STATUS']=='Active']
     previous_application_active['AMT_BALANCE_CASH_LOANS'] = previous_application_active['AMT_ANNUITY'] * previous_application_active['CNT_INSTALMENT_FUTURE_latest_POS_CASH']
     
@@ -195,7 +195,7 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
     previous_application_active_group.reset_index(inplace=True)
 
     previous_application_group = pd.merge(previous_application_group, previous_application_active_group, how='left', on = 'SK_ID_CURR')
-    
+    # Aggregation with respect to credit card data
     previous_application_active_credit = previous_application_active.loc[previous_application_active['NAME_CONTRACT_TYPE']=='Revolving loans']
     previous_application_active_credit_group = previous_application_active_credit.groupby('SK_ID_CURR').agg({
         'AMT_ANNUITY': 'sum'
@@ -204,7 +204,7 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
     previous_application_active_credit_group.reset_index(inplace = True)
 
     previous_application_group = pd.merge(previous_application_group, previous_application_active_credit_group, how = 'left', on = 'SK_ID_CURR')
-    
+    # Aggregation with respect to data already closed
     previous_application_closed = previous_application.loc[previous_application['STATUS']=='Closed']
     previous_application_closed['days_diff'] = previous_application_closed['DAYS_LAST_DUE'] - previous_application_closed['DAYS_LAST_DUE_1ST_VERSION']
 
@@ -215,7 +215,7 @@ def prev_application_process(previous_application,POS_CASH_balance,credit_card_b
     previous_application_closed_group.reset_index(inplace=True)
 
     previous_application_group = pd.merge(previous_application_group, previous_application_closed_group, how='left', on='SK_ID_CURR')
-    
+    # Aggregation with respect to data refused
     previous_application_ref = previous_application.loc[previous_application['NAME_CONTRACT_STATUS']=='Refused']
     ref_group = previous_application_ref.groupby('SK_ID_CURR').agg({
         'AMT_ANNUITY': ['max', 'mean', 'sum'],

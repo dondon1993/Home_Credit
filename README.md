@@ -82,7 +82,7 @@ Final model is heavily based on lightgbm models. I trained 10 first level lightg
   * Sample downsampling
   * Different sample weights
   * Outlier removing based on target and oof results or some feature values
-  * Try to figure out application from same people
+  * Exploit possible data leakage based on user information and behavior
  
 # Things to improve
 
